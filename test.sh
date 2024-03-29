@@ -103,7 +103,7 @@ curl -s "https://rapiddns.io/subdomain/$domain?full=1#result" | grep -v "RapidDN
 echo "Running naabu..."
 naabu -c 250 -l "$folder/subdomains_tmp.txt" -port "80,443,81,300,591,593,832,981,1010,1311,1099,2082,2095,2096,2480,3000,3128,3333,4243,4567,4711,4712,4993,5000,5104,5108,5280,5281,5601,5800,6543,7000,7001,7396,7474,3000,5000,8080,8000,8081,8888,8069,8009,8001,8070,8088,8002,8060,8091,8086,8010,8050,8085,8089,8040,8020,8051,8087,8071,8011,8030,8061,8072,8100,8083,8073,8099,8092,8074,8043,8035,8055,8021,8093,8022,8075,8044,8062,8023,8094,8012,8033,8063,8045,7000,9000,7070,9001,7001,10000,9002,7002,9003,7003,10001,80,443,4443" | anew "$folder/portscan.txt"
 echo "Running httpx ports"
-httpx -l "$folder/portscan.txt" -o "$folder/liveports.txt
+httpx -l "$folder/portscan.txt" -o "$folder/liveports.txt"
 
 # Cleaning and sorting subdomains
 echo "Cleaning and sorting subdomains..."
