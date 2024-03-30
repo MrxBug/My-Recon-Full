@@ -151,7 +151,7 @@ echo "Vulnerable XSS endpoints saved in $folder/Vulnerable_XSS.txt"
 
 # Nuclei Severity
 echo "Running Nuclei Severity..."
-cat "$folder/liveports.txt" | nuclei -severity info,low,medium,high,critical -o "$folder/severity.txt"
+cat "$folder/liveports.txt" | nuclei -severity low,medium,high,critical -o "$folder/severity.txt"
 
 # Nuclei exposures,cves
 echo "Running Nuclei exposures,cves..."
