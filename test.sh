@@ -119,6 +119,10 @@ rm "$folder/subdomains_tmp.txt"
 echo "Finding live subdomains..."
 cat "$folder/subdomains.txt" | httprobe -c 25 > "$folder/live_subdomains.txt"
 
+# filter subdomains by keywords
+echo "filter subdomains by keywords..."
+cat "$folder/live_subdomains.txt" | egrep -i "internal|api|test|prod|private|secret|git|login|admin|staging|dev|jira|intranet|vip|portal|register|pass|reset|client|database|server|backup|Credential|database|docker|encryption|security|authorization|authentication|monitoring|logging|certificate|token|integration|endpoint|validation|configuration|deployment" > "$folder/active_priority.txt"
+
 # Executando gau para encontrar endpoints
 echo "Finding endpoints with gau..."
 echo "$domain" | gau --threads 5 >> "$folder/Endpoints.txt"
