@@ -159,6 +159,6 @@ cat "$folder/live_subdomains.txt" | nuclei -severity low,medium,high,critical -o
 
 # Usando Running Nuclei Custom Template
 echo "Running Nuclei Custom Templat..."
-cat "$folder/live_subdomains.txt" | nuclei -t ~/nuclei-templates/siteminder-dom-xss.yaml
+cat "$folder/live_subdomains.txt" | nuclei -t ~/nuclei-templates/siteminder-dom-xss.yaml -o "$folder/nucleiT.txt"
 
 
