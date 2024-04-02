@@ -125,7 +125,7 @@ cat "$folder/live_subdomains.txt" | egrep -i "internal|api|test|prod|private|sec
 
 # Executando gau para encontrar endpoints
 echo "Finding endpoints with gau..."
-cat "$folder/live_subdomains.txt" | gau --threads 5 >> "$folder/Endpoints.txt"
+cat "$folder/live_subdomains.txt" | gau --threads 30 >> "$folder/Endpoints.txt"
 
 # Executando waybackurls
 echo "Executando waybackurls..."
