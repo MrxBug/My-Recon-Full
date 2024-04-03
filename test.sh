@@ -66,11 +66,11 @@ amass enum -passive -norecursive -d "$domain" -o "$folder/subdomains_tmp.txt"
 
 # Executando Findomain
 echo "Running Findomain..."
-findomain -t $domain -q 2>/dev/null >> "$folder/subdomains_tmp.txt"
+findomain -t $domain -q 2>/dev/null > "$folder/subdomains_tmp.txt"
 
 # Executando Assetfinder
 echo "Running Assetfinder..."
-assetfinder --subs-only $domain >> "$folder/subdomains_tmp.txt"
+assetfinder --subs-only $domain > "$folder/subdomains_tmp.txt"
 
 # Executando Sublist3r
 echo "Running Sublist3r..."
@@ -78,15 +78,15 @@ sublist3r -d $domain -v -o "$folder/subdomains_tmp.txt"
 
 # Executando jldc
 echo "Running jldc..."
-curl -s "https://jldc.me/anubis/subdomains/$domain" | grep -Po "((http|https):\/\/)?(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | grep "$domain" | grep -v "*" | sed -e 's/^[[:punct:]]//g' | sed -r '/^\s*$/d' | sort -u >> "$folder/subdomains_tmp.txt"
+curl -s "https://jldc.me/anubis/subdomains/$domain" | grep -Po "((http|https):\/\/)?(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | grep "$domain" | grep -v "*" | sed -e 's/^[[:punct:]]//g' | sed -r '/^\s*$/d' | sort -u > "$folder/subdomains_tmp.txt"
 
 # Executando wayback
 echo "Running wayback..."
-curl -sk "http://web.archive.org/cdx/search/cdx?url=*.$domain&output=txt&fl=original&collapse=urlkey&page=" | awk -F/ '{gsub(/:.*/, "", $3); print $3}' | sort -u >> "$folder/subdomains_tmp.txt"
+curl -sk "http://web.archive.org/cdx/search/cdx?url=*.$domain&output=txt&fl=original&collapse=urlkey&page=" | awk -F/ '{gsub(/:.*/, "", $3); print $3}' | sort -u > "$folder/subdomains_tmp.txt"
 
 # Executando crt
 echo "Running crt..."
-curl -sk "https://crt.sh/?q=%.$domain&output=json" | tr ',' '\n' | awk -F'"' '/name_value/ {gsub(/\*\./, "", $4); gsub(/\\n/,"\n",$4);print $4}' | sort -u >> "$folder/subdomains_tmp.txt"
+curl -sk "https://crt.sh/?q=%.$domain&output=json" | tr ',' '\n' | awk -F'"' '/name_value/ {gsub(/\*\./, "", $4); gsub(/\\n/,"\n",$4);print $4}' | sort -u > "$folder/subdomains_tmp.txt"
 
 # Executando abuseipdb
 echo "Running abuseipdb..."
@@ -94,15 +94,15 @@ curl -s "https://www.abuseipdb.com/whois/$domain" -H "user-agent: firefox" -b "a
 
 # Executando alienvault
 echo "Running alienvault..."
-curl -s "https://otx.alienvault.com/api/v1/indicators/domain/$domain/passive_dns" | jq '.passive_dns[].hostname' 2>/dev/null | grep -o "\w.*$domain" | sort -u >> "$folder/subdomains_tmp.txt"
+curl -s "https://otx.alienvault.com/api/v1/indicators/domain/$domain/passive_dns" | jq '.passive_dns[].hostname' 2>/dev/null | grep -o "\w.*$domain" | sort -u > "$folder/subdomains_tmp.txt"
 
 # Executando urlscan.io
 echo "Running urlscan..."
-curl -s "https://urlscan.io/api/v1/search/?q=domain:$domain" | jq '.results[].page.domain' 2>/dev/null | grep -o "\w.*$domain"| sort -u >> "$folder/subdomains_tmp.txt"
+curl -s "https://urlscan.io/api/v1/search/?q=domain:$domain" | jq '.results[].page.domain' 2>/dev/null | grep -o "\w.*$domain"| sort -u > "$folder/subdomains_tmp.txt"
 
 # Executando RapidDNS
 echo "Running RapidDNS..."
-curl -s "https://rapiddns.io/subdomain/$domain?full=1#result" | grep -v "RapidDNS" | grep -v "<td><a" | cut -d '>' -f 2 | cut -d '<' -f 1 | grep "$domain" | grep -v "*" | sed -e 's/^[[:punct:]]//g' | sed -r '/^\s*$/d' | sort -u >> "$folder/subdomains_tmp.txt"
+curl -s "https://rapiddns.io/subdomain/$domain?full=1#result" | grep -v "RapidDNS" | grep -v "<td><a" | cut -d '>' -f 2 | cut -d '<' -f 1 | grep "$domain" | grep -v "*" | sed -e 's/^[[:punct:]]//g' | sed -r '/^\s*$/d' | sort -u > "$folder/subdomains_tmp.txt"
 
 # Executando Naabu
 echo "Running naabu..."
@@ -112,7 +112,7 @@ httpx -l "$folder/portscan.txt" -o "$folder/liveports.txt"
 
 # Limpando e ordenando subdomínios
 echo "Cleaning and sorting subdomains..."
-sort -u "$folder/subdomains_tmp.txt" >> "$folder/subdomains.txt"
+sort -u "$folder/subdomains_tmp.txt" > "$folder/subdomains.txt"
 rm "$folder/subdomains_tmp.txt"
 
 # Executando httpx para encontrar subdomínios ativos
@@ -125,19 +125,19 @@ cat "$folder/live_subdomains.txt" | egrep -i "internal|api|test|prod|private|sec
 
 # Executando gau para encontrar endpoints
 echo "Finding endpoints with gau..."
-cat "$folder/live_subdomains.txt" | gau --threads 10 >> "$folder/Endpoints.txt"
+cat "$folder/live_subdomains.txt" | gau --threads 10 --o "$folder/Endpoints.txt"
 
 # Executando waybackurls
 echo "Executando waybackurls..."
-cat "$folder/live_subdomains.txt" | waybackurls >> "$folder/Endpoints.txt"
+cat "$folder/live_subdomains.txt" | waybackurls > "$folder/Endpoints.txt"
 
 # Executando gospider
 echo "Executando gospider..."
-gospider -S "$folder/live_subdomains.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg)" --other-source | grep "code-200" | awk '{print $5}' >> "$folder/Endpoints.txt"
+gospider -S "$folder/live_subdomains.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg)" --other-source | grep "code-200" | awk '{print $5}' > "$folder/Endpoints.txt"
 
 # Executando katana 
 echo "Finding endpoints with katana..."
-cat "$folder/live_subdomains.txt" | katana -d 10 -jc >> "$folder/Endpoints.txt"
+cat "$folder/live_subdomains.txt" | katana -d 10 -jc > "$folder/Endpoints.txt"
 
 # Removendo duplicatas usando uro
 echo "Removing duplicates from Endpoints.txt..."
