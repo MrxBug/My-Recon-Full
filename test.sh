@@ -66,43 +66,50 @@ amass enum -passive -norecursive -d "$domain" -o "$folder/amass_tmp.txt"
 
 # Executando Findomain
 echo "Running Findomain..."
-findomain -t $domain -q 2>/dev/null > "$folder/Findomain_tmp.txt"
+findomain -t "$domain" -q 2>/dev/null > "$folder/Findomain_tmp.txt"
 
 # Executando Assetfinder
 echo "Running Assetfinder..."
-assetfinder --subs-only $domain > "$folder/Assetfinder_tmp.txt"
+assetfinder --subs-only "$domain" > "$folder/Assetfinder_tmp.txt"
 
 # Executando Sublist3r
 echo "Running Sublist3r..."
-sublist3r -d $domain -v -o "$folder/Sublist3r_tmp.txt"
+sublist3r -d "$domain" -v -o "$folder/Sublist3r_tmp.txt"
 
 # Executando jldc
 echo "Running jldc..."
 curl -s "https://jldc.me/anubis/subdomains/$domain" | grep -Po "((http|https):\/\/)?(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | grep "$domain" | grep -v "*" | sed -e 's/^[[:punct:]]//g' | sed -r '/^\s*$/d' | sort -u > "$folder/jldc_tmp.txt"
+wc -l "$folder/jldc_tmp.txt"
 
 # Executando wayback
 echo "Running wayback..."
 curl -sk "http://web.archive.org/cdx/search/cdx?url=*.$domain&output=txt&fl=original&collapse=urlkey&page=" | awk -F/ '{gsub(/:.*/, "", $3); print $3}' | sort -u > "$folder/wayback_tmp.txt"
+wc -l "$folder/wayback_tmp.txt"
 
 # Executando crt
 echo "Running crt..."
 curl -sk "https://crt.sh/?q=%.$domain&output=json" | tr ',' '\n' | awk -F'"' '/name_value/ {gsub(/\*\./, "", $4); gsub(/\\n/,"\n",$4);print $4}' | sort -u > "$folder/crt_tmp.txt"
+wc -l "$folder/crt_tmp.txt"
 
 # Executando abuseipdb
 echo "Running abuseipdb..."
 curl -s "https://www.abuseipdb.com/whois/$domain" -H "user-agent: firefox" -b "abuseipdb_session=" | grep -E '<li>\w.*</li>' | sed -E 's/<\/?li>//g' | sed -e "s/$/.$domain/" | sort -u > "$folder/abuseipdb_tmp.txt"
+wc -l "$folder/abuseipdb_tmp.txt"
 
 # Executando alienvault
 echo "Running alienvault..."
 curl -s "https://otx.alienvault.com/api/v1/indicators/domain/$domain/passive_dns" | jq '.passive_dns[].hostname' 2>/dev/null | grep -o "\w.*$domain" | sort -u > "$folder/alienvault_tmp.txt"
+wc -l "$folder/alienvault_tmp.txt"
 
 # Executando urlscan.io
 echo "Running urlscan..."
 curl -s "https://urlscan.io/api/v1/search/?q=domain:$domain" | jq '.results[].page.domain' 2>/dev/null | grep -o "\w.*$domain"| sort -u > "$folder/urlscan_tmp.txt"
+wc -l "$folder/urlscan_tmp.txt"
 
 # Executando RapidDNS
 echo "Running RapidDNS..."
 curl -s "https://rapiddns.io/subdomain/$domain?full=1#result" | grep -v "RapidDNS" | grep -v "<td><a" | cut -d '>' -f 2 | cut -d '<' -f 1 | grep "$domain" | grep -v "*" | sed -e 's/^[[:punct:]]//g' | sed -r '/^\s*$/d' | sort -u > "$folder/RapidDNS_tmp.txt"
+wc -l "$folder/RapidDNS_tmp.txt"
 
 # Limpando e ordenando subdomínios
 echo "Cleaning and sorting subdomains..."
