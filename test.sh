@@ -152,12 +152,13 @@ wc -l "$folder/EndpointsWay.txt"
 
 # Executando gospider
 echo "Executando gospider..."
-gospider -S "$folder/live_subdomains.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg|txt)" --other-source | grep -e "code-200" | awk '{print $5}'| anew "$folder/EndpointsGos.txt"
+gospider -S "$folder/live_subdomains.txt" -o "$folder/output" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg|txt)" --other-source 
+cat "$folder/output/*" | grep -e "code-200" | awk '{print $5}'| anew "$folder/EndpointsGos.txt"
 wc -l "$folder/EndpointsGos.txt"
 
 # Executando katana 
 echo "Finding endpoints with katana..."
-cat "$folder/live_subdomains.txt" | katana -d 6 -jc > "$folder/Endpointskat.txt"
+cat "$folder/live_subdomains.txt" | katana -d 6 -jc -o "$folder/Endpointskat.txt"
 wc -l "$folder/Endpointskat.txt"
 
 # Removendo duplicatas usando uro
