@@ -73,8 +73,9 @@ echo "Running Assetfinder..."
 assetfinder --subs-only "$domain" > "$folder/Assetfinder_tmp.txt"
 
 # Executando Sublist3r
+# colocar caminho Sublist3r
 echo "Running Sublist3r..."
-sublist3r -d "$domain" -v -o "$folder/Sublist3r_tmp.txt"
+python3 ~/Sublist3r/sublist3r.py -d "$domain" -v -o "$folder/Sublist3r_tmp.txt"
 
 # Executando jldc
 echo "Running jldc..."
