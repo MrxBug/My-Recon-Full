@@ -130,10 +130,11 @@ ffuf -w ~/wordlists/common-paths-tom.txt -u "$domain/FUZZ" -o "$folder/ffuf.txt"
 # Extract .js Subdomains
 echo "Extract .js Subdomains..."
 cat "$folder/live_subdomains.txt" | getJS --complete | anew JS.txt
+mv JS.txt "$folder/JS.txt"
 
 # Executando gau para encontrar endpoints
 echo "Finding endpoints with gau..."
-cat "$folder/live_subdomains.txt" | gau --threads 10 --o "$folder/Endpoints.txt"
+cat "$folder/live_subdomains.txt" | gau --blacklist png,jpg,gif,svg,jpeg,pdf --threads 6 --o "$folder/Endpoints.txt"
 
 # Executando waybackurls
 echo "Executando waybackurls..."
@@ -141,11 +142,11 @@ cat "$folder/live_subdomains.txt" | waybackurls > "$folder/Endpoints.txt"
 
 # Executando gospider
 echo "Executando gospider..."
-gospider -S "$folder/live_subdomains.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg|txt)" --other-source | grep "code-200" | awk '{print $5}' > "$folder/Endpoints.txt"
+gospider -S "$folder/live_subdomains.txt" -o "$folder/Endpoints.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg|txt)" --other-source  
 
 # Executando katana 
 echo "Finding endpoints with katana..."
-cat "$folder/live_subdomains.txt" | katana -d 10 -jc > "$folder/Endpoints.txt"
+cat "$folder/live_subdomains.txt" | katana -d 6 -jc > "$folder/Endpoints.txt"
 
 # Removendo duplicatas usando uro
 echo "Removing duplicates from Endpoints.txt..."
@@ -177,7 +178,6 @@ subjack -w "$folder/subdomains.txt" -t 20 -a -o "$folder/takeover.txt"
 echo "Finding openredirect vulnerabilities..."
 cat "$folder/EndpointsL.txt" | gf redirect | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q "$folder/openredirect.txt" 
 cat "$folder/openredirect.txt" | nuclei -t ~/nuclei-templates/http/vulnerabilities/generic/open-redirect.yaml -o "$folder/open-redirectVUL.txt" 
-rm "$folder/openredirect.txt"
 
 # crlf vulnerabilities
 echo "Finding crlfuzz  vulnerabilities..."
@@ -185,7 +185,7 @@ crlfuzz -l "$folder/live_subdomains.txt" -c 50 -s | anew "$folder/crlf.txt" &> /
 
 #  XSS vulnerabilities
 echo "Finding XSS vulnerabilities with gf..."
-cat "$folder/EndpointsL.txt" | gf xss >> "$folder/xss.txt"
+cat "$folder/EndpointsL.txt" | gf xss > "$folder/xss.txt"
 
 # Usando Gxss para enviar payloads para endpoints XSS potenciais
 echo "Sending payloads with Gxss..."
