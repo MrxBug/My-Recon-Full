@@ -164,7 +164,8 @@ wc -l "$folder/Endpointskat.txt"
 echo "Removing duplicats Endpoints.txt..."
 cat "$folder/EndpointsGau.txt" "$folder/EndpointsWay.txt" "$folder/EndpointsGos.txt" "$folder/Endpointskat.txt" > "$folder/Endpoints1.txt"
 cat "$folder/Endpoints1.txt" | uro | anew "$folder/EndpointsL.txt"
-rm "$folder/EndpointsGau.txt" "$folder/EndpointsWay.txt" "$folder/EndpointsGos.txt" "$folder/Endpointskat.txt" 
+rm "$folder/EndpointsGau.txt" "$folder/EndpointsWay.txt" "$folder/EndpointsGos.txt" "$folder/Endpointskat.txt"
+rm "$folder/Endpoints1.txt"
 wc -l "$folder/EndpointsL.txt"
 
 # Usando gf patterns
