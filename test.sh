@@ -114,13 +114,14 @@ wc -l "$folder/RapidDNS_tmp.txt"
 
 # Limpando e ordenando subdomínios
 echo "Cleaning and sorting subdomains..."
-cat "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" > "$folder/subdomains_tmp1.txt" 
+cat "$folder/*" > "$folder/subdomains_tmp1.txt"
 sort -u "$folder/subdomains_tmp1.txt" > "$folder/subdomains.txt"
 rm "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt"
+rm "$folder/subdomains_tmp1.txt"
 
 # Executando Naabu
 echo "Running naabu..."
-naabu -c 250 -l "$folder/subdomains.txt" -port "80,443,81,300,591,593,832,981,1010,1311,1099,2082,2095,2096,2480,3000,3128,3333,4243,4567,4711,4712,4993,5000,5104,5108,5280,5281,5601,5800,6543,7000,7001,7396,7474,3000,5000,8080,8000,8081,8888,8069,8009,8001,8070,8088,8002,8060,8091,8086,8010,8050,8085,8089,8040,8020,8051,8087,8071,8011,8030,8061,8072,8100,8083,8073,8099,8092,8074,8043,8035,8055,8021,8093,8022,8075,8044,8062,8023,8094,8012,8033,8063,8045,7000,9000,7070,9001,7001,10000,9002,7002,9003,7003,10001,80,443,4443" | anew "$folder/portscan.txt"
+naabu -c 250 -l "$folder/subdomains.txt" -port "81,300,591,593,832,981,1010,1311,1099,2082,2095,2096,2480,3000,3128,3333,4243,4567,4711,4712,4993,5000,5104,5108,5280,5281,5601,5800,6543,7000,7001,7396,7474,3000,5000,8080,8000,8081,8888,8069,8009,8001,8070,8088,8002,8060,8091,8086,8010,8050,8085,8089,8040,8020,8051,8087,8071,8011,8030,8061,8072,8100,8083,8073,8099,8092,8074,8043,8035,8055,8021,8093,8022,8075,8044,8062,8023,8094,8012,8033,8063,8045,7000,9000,7070,9001,7001,10000,9002,7002,9003,7003,10001,80,443,4443" | anew "$folder/portscan.txt"
 echo "Running httpx Live ports"
 httpx -l "$folder/portscan.txt" -o "$folder/liveports.txt"
 
@@ -214,7 +215,7 @@ cat "$folder/xss.txt" | Gxss -p khXSS -o "$folder/XSS_Ref.txt"
 
 # Analisando referências XSS com dalfox
 echo "Analyzing XSS references with dalfox..."
-dalfox file "$folder/XSS_Ref.txt" pipe --skip-bav --mining-dom --deep-domxss --ignore-return -b 'https://mrxbugcom.bxss.in' --follow-redirects  -o "$folder/Vulnerable_XSS.txt"
+dalfox file "$folder/XSS_Ref.txt" --skip--mining-all -b 'https://mrxbugcom.bxss.in' -o "$folder/Vulnerable_XSS.txt"
 
 # Usando Running Nuclei Severity
 echo "Running Nuclei Severity..."
