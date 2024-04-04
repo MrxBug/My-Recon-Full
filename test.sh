@@ -152,7 +152,7 @@ wc -l "$folder/EndpointsWay.txt"
 
 # Executando gospider
 echo "Executando gospider..."
-gospider -S "$folder/live_subdomains.txt" -o "$folder/EndpointsGos.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg|txt)" --other-source  
+gospider -S "$folder/live_subdomains.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg|txt)" --other-source | grep -e "code-200" | awk '{print $5}'| anew "$folder/EndpointsGos.txt"
 wc -l "$folder/EndpointsGos.txt"
 
 # Executando katana 
