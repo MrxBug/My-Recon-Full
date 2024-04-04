@@ -142,24 +142,25 @@ cat "$folder/live_subdomains.txt" | getJS --complete | anew "$folder/JS.txt"
 
 # Executando gau para encontrar endpoints
 echo "Finding endpoints with gau..."
-cat "$folder/live_subdomains.txt" | gau --blacklist png,jpg,gif,svg,jpeg,pdf --threads 6 --o "$folder/Endpoints.txt"
+cat "$folder/live_subdomains.txt" | gau --blacklist png,jpg,gif,svg,jpeg,pdf --threads 6 --o "$folder/EndpointsGau.txt"
 
 # Executando waybackurls
 echo "Executando waybackurls..."
-cat "$folder/live_subdomains.txt" | waybackurls > "$folder/Endpoints.txt"
+cat "$folder/live_subdomains.txt" | waybackurls > "$folder/EndpointsWay.txt"
 
 # Executando gospider
 echo "Executando gospider..."
-gospider -S "$folder/live_subdomains.txt" -o "$folder/Endpoints.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg|txt)" --other-source  
+gospider -S "$folder/live_subdomains.txt" -o "$folder/EndpointsGos.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg|txt)" --other-source  
 
 # Executando katana 
 echo "Finding endpoints with katana..."
-cat "$folder/live_subdomains.txt" | katana -d 6 -jc > "$folder/Endpoints.txt"
+cat "$folder/live_subdomains.txt" | katana -d 6 -jc > "$folder/Endpointskat.txt"
 
 # Removendo duplicatas usando uro
-echo "Removing duplicates from Endpoints.txt..."
-cat "$folder/Endpoints.txt" | uro | anew "$folder/EndpointsL.txt"
-rm "$folder/Endpoints.txt"
+echo "Removing duplicats Endpoints.txt..."
+cat "$folder/EndpointsGau.txt" "$folder/EndpointsWay.txt" "$folder/EndpointsGos.txt" "$folder/Endpointskat.txt" > "$folder/Endpoints1.txt"
+cat "$folder/Endpoints1.txt" | uro | anew "$folder/EndpointsL.txt"
+rm "$folder/EndpointsGau.txt" "$folder/EndpointsWay.txt" "$folder/EndpointsGos.txt" "$folder/Endpointskat.txt" 
 
 # Usando gf patterns
 echo "Finding gf lfi vulnerabilities with gf..."
