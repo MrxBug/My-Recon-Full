@@ -164,7 +164,7 @@ wc -l "$folder/EndpointsHakrawler.txt"
 
 # Executando katana 
 echo "Finding endpoints with katana..."
-cat "$folder/live_subdomains.txt" | katana -d 6 -jc -o "$folder/Endpointskat.txt"
+cat "$folder/live_subdomains.txt" | katana -jc -f qurl -d 6 -o "$folder/Endpointskat.txt"
 wc -l "$folder/Endpointskat.txt"
 
 # Removendo duplicatas usando uro
