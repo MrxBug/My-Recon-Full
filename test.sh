@@ -156,6 +156,11 @@ gospider -S "$folder/live_subdomains.txt" -o "$folder/output" -c 10 -d 5 --black
 cat "$folder/output/*" | grep -e "code-200" | awk '{print $5}'| anew "$folder/EndpointsGos.txt"
 wc -l "$folder/EndpointsGos.txt"
 
+# Executando hakrawler
+echo "Executando hakrawler"
+cat "$folder/live_subdomains.txt" | hakrawler -subs -u -t 10 | anew "$folder/EndpointsHakrawler.txt"
+wc -l "$folder/EndpointsHakrawler.txt"
+
 # Executando katana 
 echo "Finding endpoints with katana..."
 cat "$folder/live_subdomains.txt" | katana -d 6 -jc -o "$folder/Endpointskat.txt"
@@ -163,7 +168,7 @@ wc -l "$folder/Endpointskat.txt"
 
 # Removendo duplicatas usando uro
 echo "Removing duplicats Endpoints.txt..."
-cat "$folder/EndpointsGau.txt" "$folder/EndpointsWay.txt" "$folder/EndpointsGos.txt" "$folder/Endpointskat.txt" > "$folder/Endpoints1.txt"
+cat "$folder/EndpointsGau.txt" "$folder/EndpointsWay.txt" "$folder/EndpointsGos.txt" "$folder/Endpointskat.txt" "$folder/EndpointsHakrawler.txt" > "$folder/Endpoints1.txt"
 cat "$folder/Endpoints1.txt" | uro | anew "$folder/EndpointsL.txt"
 rm "$folder/EndpointsGau.txt" "$folder/EndpointsWay.txt" "$folder/EndpointsGos.txt" "$folder/Endpointskat.txt"
 rm "$folder/Endpoints1.txt"
