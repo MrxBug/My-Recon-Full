@@ -130,8 +130,7 @@ ffuf -w ~/wordlists/common-paths-tom.txt -u "https://$domain/FUZZ" -o "$folder/f
 
 # Extract .js Subdomains
 echo "Extract .js Subdomains..."
-cat "$folder/live_subdomains.txt" | getJS --complete | anew JS.txt
-mv JS.txt "$folder/JS.txt"
+cat "$folder/live_subdomains.txt" | getJS --complete | anew "$folder/JS.txt"
 
 # Executando gau para encontrar endpoints
 echo "Finding endpoints with gau..."
