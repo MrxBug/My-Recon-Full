@@ -219,19 +219,7 @@ dalfox file "$folder/XSS_Ref.txt" --skip--mining-all -b 'https://mrxbugcom.bxss.
 
 # Usando Running Nuclei Severity
 echo "Running Nuclei Severity..."
-cat "$folder/live_subdomains.txt" | nuclei -severity low,medium,high,critical -o "$folder/severityNUclei.txt" -H "User-Agent:Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0"
+nuclei -l "$folder/live_subdomains.txt" -severity low,medium,high,critical -o "$folder/severityNUclei.txt" -H "User-Agent:Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0"
 
 # Usando Nuclei Custom Template
-# wget https://raw.githubusercontent.com/pikpikcu/nuclei-templates/master/vulnerabilities/command-injection.yaml
-echo "Running Nuclei command-injection..."
-cat "$folder/live_subdomains.txt" | nuclei -t ~/nuclei-templates/command-injection.yaml -o "$folder/command-injection.txt"
 
-# Usando Nuclei Custom Template
-# wget https://raw.githubusercontent.com/medbsq/ncl/main/templates/jira_user_piker.yaml
-echo "Running Nuclei Jira Unauthenticated User Picker..."
-cat "$folder/live_subdomains.txt" | nuclei -t ~/nuclei-templates/jira_user_piker.yaml -o "$folder/jira_user_piker.txt"
-
-# Usando Nuclei Custom Template
-# wget https://raw.githubusercontent.com/im403/nuclei-temp/master/high/wordpress-duplicator-path-traversal.yaml
-echo "Running Nuclei WordPress duplicator Path Traversal..."
-cat "$folder/live_subdomains.txt" | nuclei -t ~/nuclei-templates/wordpress-duplicator-path-traversal.yaml  -o "$folder/wordpress-path-traversal.txt"
