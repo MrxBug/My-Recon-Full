@@ -237,7 +237,7 @@ dalfox file "$folder/XSS_Ref.txt" --skip--mining-all -b 'https://mrxbugcom.bxss.
 
 # nuclei exposures JS
 echo -e "\e[32mExecutando nuclei JS Vulnerabilit\e[0m"
-nuclei -l "$folder/JS.txt" -t ~/nuclei-templates/exposures/ -o "$folder/js_Vul.txt"
+nuclei -l "$folder/JS.txt" -t ~/nuclei-templates/http/exposures/ -o "$folder/js_Vul.txt"
 
 # nuclei
 echo -e "\e[32mExecutando nuclei Vulnerabilit\e[0m"
