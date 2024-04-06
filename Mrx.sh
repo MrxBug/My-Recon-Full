@@ -72,6 +72,30 @@ findomain -t "$domain" -q 2>/dev/null > "$folder/Findomain_tmp.txt"
 echo -e "\e[33mRunning Assetfinder\e[0m"
 assetfinder --subs-only "$domain" > "$folder/Assetfinder_tmp.txt"
 
+# Executando chaos
+echo -e "\e[33mRunning Chaos\e[0m"
+chaos -d "$domain" -o "$folder/chaos_tmp.txt"
+
+#gau-subdomains
+echo -e "\e[33mRunning Gau subdomains\e[0m"
+gau --threads 10 --subs "$domain" | unfurl -u domains > "$folder/gau_tmp.txt"
+
+#github-subdomains verificar Api
+echo -e "\e[33mRunning Github subdomains\e[0m"
+github-subdomains -d "$domain" -o "$folder/github_tmp.txt"
+
+#gitlab-subdomains verificar Api
+echo -e "\e[33mRunning Gitlab subdomains\e[0m"
+gitlab-subdomains -d "$domain" > "$folder/gitlab_tmp.txt"
+
+#cero-subdomains
+echo -e "\e[33mRunning Cero subdomains\e[0m"
+cero "$domain" > "$folder/cero_temp.txt"
+
+#center-subdomains
+echo -e "\e[33mRunning Center subdomains\e[0m"
+curl "https://api.subdomain.center/?domain=$domain" -s | jq -r '.[]' | sort -u > "$folder/center_tmp.txt"
+
 # Executando Sublist3r
 # colocar caminho Sublist3r
 echo -e "\e[33mRunning Sublist3r\e[0m"
@@ -107,9 +131,9 @@ curl -s "https://rapiddns.io/subdomain/$domain?full=1#result" | grep -v "RapidDN
 
 # Limpando e ordenando subdomínios
 echo -e "\e[33mCleaning and sorting subdomains\e[0m"
-cat "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" > "$folder/subdomains_tmp1.txt"
+cat "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt" > "$folder/subdomains_tmp1.txt"
 sort -u "$folder/subdomains_tmp1.txt" > "$folder/subdomains.txt"
-rm "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt"
+rm "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt"
 rm "$folder/subdomains_tmp1.txt"
 
 # Executando Naabu Portas Scan
@@ -202,6 +226,11 @@ echo -e "\e[32mExecutando Gf ssrf...\e[0m"
 cat "$folder/EndpointsL.txt" | uro | gf ssrf | anew "$folder/ssrf.txt"
 
 echo -e "\e[32mExecutando Testes de Vulnerabilidade\e[0m"
+
+# Prototype Pollution One-line
+echo -e "\e[32mPrototype Pollution One-line\e[0m"
+httpx -l "$folder/subdomains.txt" -threads 200 | anew -q FILE.txt && sed 's/$/\/?_proto_[testparam]=exploit\//' FILE.txt | page-fetch -j 'window.testparam == "exploit"? "[VULNERABLE]" : "[NOTVULNERABLE]"' | sed "s/(//g" | sed "s/)//g" | sed "s/JS //g" | grep "VULNERABLE" > "$folder/PrototypeP.txt"      
+rm FILE.txt
 
 #lfi
 # Passar caminho da Wordlist de paylouds!!!
