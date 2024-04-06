@@ -219,6 +219,8 @@ cat sqli.txt | xargs -P 30 -I % bash -c "python3 ~/tools/sqlmap/sqlmap.py -u % -
 mv sqli.txt "$folder/sqli.txt"
 
 # takeover vulnerabilities
+# criar caminho e add o arquivo abaixo
+#https://raw.githubusercontent.com/haccer/subjack/master/fingerprints.json
 echo -e "\e[32mExecutando takeover Vulnerabilit\e[0m"
 subjack -w "$folder/subdomains.txt" -t 20 -a -o "$folder/takeover.txt" -ssl
 
