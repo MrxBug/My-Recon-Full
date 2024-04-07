@@ -52,6 +52,8 @@ if [ -z "$domain" ]; then
     exit 1
 fi
 
+source config.txt
+
 # Criando pasta para o domínio
 folder="$domain"
 mkdir -p "$folder"
@@ -82,7 +84,7 @@ echo -e "\e[1;31m$(wc -l < "$folder/Assetfinder_tmp.txt")\e[0m"
 
 # Executando chaos
 echo -e "\e[33mRunning Chaos\e[0m"
-chaos -d "$domain" -o "$folder/chaos_tmp.txt"
+chaos -key $CHAOS_API_KEY -d "$domain" -o "$folder/chaos_tmp.txt"
 # Contar as linhas do arquivo 
 echo -e "\e[1;31m$(wc -l < "$folder/chaos_tmp.txt")\e[0m"
 
@@ -94,13 +96,13 @@ echo -e "\e[1;31m$(wc -l < "$folder/gau_tmp.txt")\e[0m"
 
 #github-subdomains verificar Api
 echo -e "\e[33mRunning Github subdomains\e[0m"
-github-subdomains -d "$domain" -o "$folder/github_tmp.txt"
+github-subdomains -d "$domain" -t $GITHUB_TOKEN -o "$folder/github_tmp.txt"
 # Contar as linhas do arquivo 
 echo -e "\e[1;31m$(wc -l < "$folder/github_tmp.txt")\e[0m"
 
 #gitlab-subdomains verificar Api
 echo -e "\e[33mRunning Gitlab subdomains\e[0m"
-gitlab-subdomains -d "$domain" > "$folder/gitlab_tmp.txt"
+gitlab-subdomains -d "$domain" -t $GITLAB_TOKEN > "$folder/gitlab_tmp.txt"
 # Contar as linhas do arquivo 
 echo -e "\e[1;31m$(wc -l < "$folder/gitlab_tmp.txt")\e[0m"
 
