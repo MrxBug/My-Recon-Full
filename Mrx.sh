@@ -268,7 +268,7 @@ crlfuzz -l "$folder/live_subdomains.txt" -c 50 -s -o "$folder/crlfVul.txt"
 
 # dalfox
 echo -e "\e[32mExecutando dalfox Vulnerabilit\e[0m"
-dalfox file "$folder/XSS_Ref.txt" --skip--mining-all -b 'https://mrxbugcom.bxss.in' -o "$folder/Vulnerable_XSS.txt"
+dalfox file "$folder/XSS_Ref.txt" --skip-mining-all -b 'https://mrxbugcom.bxss.in' -o "$folder/Vulnerable_XSS.txt"
 
 # nuclei exposures JS
 echo -e "\e[32mExecutando nuclei JS Vulnerabilit\e[0m"
