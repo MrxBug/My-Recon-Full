@@ -284,7 +284,7 @@ echo -e "\e[32mExecutando Testes de Vulnerabilidade\e[0m"
 
 # teste xss
 echo -e "\e[32mExecutando qsreplace xss...\e[0m"
-cat "$folder/xss.txt" | uro | grep "=" | qsreplace '"><img src=x onerror=alert(1);>' | freq | egrep -v 'Not' > "$folder/qsreplaceVul.txt"
+cat "$folder/xss.txt" | uro | grep "=" | qsreplace '"><img src=x onerror=alert(1);>' | airixss -payload "alert(1)" | egrep -v 'Not' > "$folder/qsreplaceVul.txt"
 
 # One-line test
 # Prototype Pollution One-line
