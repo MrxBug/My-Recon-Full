@@ -311,8 +311,8 @@ rm templfi.txt
 
 #Sqli vulnerabilities
 # Passar caminho do sqlmap
-echo -e "\e[32mExecutando sqli Vulnerabilit\e[0m"
-cat sqli.txt | xargs -P 30 -I % bash -c "python3 ~/tools/sqlmap/sqlmap.py -u % -b --batch --disable-coloring --random-agent --risk 3 --level 5 --output-dir="$folder/sqlmapVUL.txt" 2> /dev/null" &> /dev/null
+#echo -e "\e[32mExecutando sqli Vulnerabilit\e[0m"
+#cat sqli.txt | xargs -P 30 -I % bash -c "python3 ~/tools/sqlmap/sqlmap.py -u % -b --batch --disable-coloring --random-agent --risk 3 --level 5 --output-dir="$folder/sqlmapVUL.txt" 2> /dev/null" &> /dev/null
 mv sqli.txt "$folder/sqli.txt"
 
 # takeover vulnerabilities
