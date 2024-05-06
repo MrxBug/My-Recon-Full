@@ -26,12 +26,14 @@ nuclei -ut
 echo "Instalando Subfinder"
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 mv ~/go/bin/* /usr/local/bin/
+subfinder
 
 echo "Instalando Httpx"
 go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 mv ~/go/bin/* /usr/local/bin/
 
 echo "Instalando Naabu"
+sudo apt install -y libpcap-dev
 go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 mv ~/go/bin/* /usr/local/bin/
 
@@ -40,7 +42,7 @@ go install github.com/projectdiscovery/katana/cmd/katana@latest
 mv ~/go/bin/* /usr/local/bin/
 
 echo "Instalando amass"
-go install -v github.com/OWASP/Amass/v3/...@latest
+go install -v github.com/owasp-amass/amass/v4/...@master
 mv ~/go/bin/* /usr/local/bin/
 
 echo "Instalando Waybackurls"
@@ -126,18 +128,25 @@ mv ~/go/bin/* /usr/local/bin/
 # Limpeza e organização
 clear
 mkdir -p ~/tools ~/.gf ~/wordlists ~/wordlists/payloads
-cd ~/tools/ && wget https://github.com/findomain/findomain/releases/latest/download/findomain-linux && chmod +x findomain-linux && mv findomain-linux /usr/local/bin/findomain 2> /dev/null
-
-cp -r ~/go/src/github.com/tomnomnom/gf/examples ~/.gf/
-echo 'source ~/go/src/github.com/tomnomnom/gf/gf-completion.bash' >> ~/.bashrc
-echo 'export PATH=$PATH:$(go env GOPATH)/bin' >> ~/.bashrc
+cd ~/tools
+wget https://github.com/Findomain/Findomain/releases/download/9.0.4/findomain-linux.zip
+apt install unzip
+unzip findomain-linux.zip
+chmod +x findomain
+sudo cp findomain /usr/bin/findomain
+findomain -h
+rm -r findomain-linux.zip
 
 git clone https://github.com/1ndianl33t/Gf-Patterns 2> /dev/null
-mv ~/Gf-Patterns/*.json ~/.gf/
+mv ~/tools/Gf-Patterns/*.json ~/.gf
 rm -rf ~/Gf-Patterns 2> /dev/null
 
 echo "Instalando Wordlists & Payloads"
 cd ~/wordlists/ && wget https://raw.githubusercontent.com/MrxBug/common-paths-tomnomnom/main/common-paths-tomnomnom
 cd ~/wordlists/payloads/ && wget https://raw.githubusercontent.com/MrxBug/lfi-paylouds-small/main/lfi.txt
+cd ~/wordlists/ && wget https://raw.githubusercontent.com/lsnakazone/WordList/master/deepmagic.com-top500prefixes.txt
+cd ~/wordlists/ && wget https://raw.githubusercontent.com/lsnakazone/WordList/master/deepmagic.com-top50kprefixes.txt
+cd ~/wordlists/ && wget https://raw.githubusercontent.com/lsnakazone/WordList/master/subdomains-top1mil-5000.txt
+cd ~/wordlists/ && wget https://raw.githubusercontent.com/lsnakazone/WordList/master/subdomains-top1mil-110000.txt
 
 echo "Instalação concluída"
