@@ -336,7 +336,7 @@ nuclei -l "$folder/live_subdomains.txt" -severity low,medium,high,critical -o "$
 
 # Arquivos rápidos e suculentos com lista de palavras tomnomnom e ffuf
 echo -e "\e[33mffuf Arquivos suculentos...\e[0m"
-ffuf -w ~/wordlists/common-paths-tom.txt -u "https://$domain/FUZZ" -o "$folder/ffuf.txt"
+ffuf -w ~/wordlists/common-paths-tomnomnom.txt -u "https://$domain/FUZZ" -o "$folder/ffuf.txt"
 
 echo -e "\e[34mScanner Concluído\e[0m"
 
