@@ -128,6 +128,7 @@ mv ~/go/bin/* /usr/local/bin/
 # Limpeza e organização
 clear
 mkdir -p ~/tools ~/.gf ~/wordlists ~/wordlists/payloads
+sudo apt-get install jq -y 
 cd ~/tools
 wget https://github.com/Findomain/Findomain/releases/download/9.0.4/findomain-linux.zip
 apt install unzip
@@ -137,9 +138,15 @@ sudo cp findomain /usr/bin/findomain
 findomain -h
 rm -r findomain-linux.zip
 
+cd ~/tools
 git clone https://github.com/1ndianl33t/Gf-Patterns 2> /dev/null
 mv ~/tools/Gf-Patterns/*.json ~/.gf
 rm -rf ~/Gf-Patterns 2> /dev/null
+
+cd ~/tools
+git clone https://github.com/aboul3la/Sublist3r.git
+cd Sublist3r
+sudo pip3 install -r requirements.txt
 
 echo "Instalando Wordlists & Payloads"
 cd ~/wordlists/ && wget https://raw.githubusercontent.com/MrxBug/common-paths-tomnomnom/main/common-paths-tomnomnom
