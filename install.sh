@@ -125,6 +125,16 @@ echo "Instalando crlfuzz"
 GO111MODULE=on go install github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest
 mv ~/go/bin/* /usr/local/bin/
 
+mkdir /src
+cd /src
+mkdir github.com
+cd github.com
+mkdir haccer
+cd haccer
+mkdir subjack
+cd subjack
+wget https://raw.githubusercontent.com/haccer/subjack/master/fingerprints.json
+
 # Limpeza e organização
 clear
 mkdir -p ~/tools ~/.gf ~/wordlists ~/wordlists/payloads
@@ -155,5 +165,8 @@ cd ~/wordlists/ && wget https://raw.githubusercontent.com/lsnakazone/WordList/ma
 cd ~/wordlists/ && wget https://raw.githubusercontent.com/lsnakazone/WordList/master/deepmagic.com-top50kprefixes.txt
 cd ~/wordlists/ && wget https://raw.githubusercontent.com/lsnakazone/WordList/master/subdomains-top1mil-5000.txt
 cd ~/wordlists/ && wget https://raw.githubusercontent.com/lsnakazone/WordList/master/subdomains-top1mil-110000.txt
+
+cd /root/nuclei-templates/http/vulnerabilities/generic/ 
+wget https://raw.githubusercontent.com/projectdiscovery/nuclei-templates/master/vulnerabilities/generic/open-redirect.yaml
 
 echo "Instalação concluída"
