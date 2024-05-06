@@ -21,7 +21,7 @@ dos2unix config.txt
 echo "Instalando Nuclei"
 go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 mv ~/go/bin/* /usr/local/bin/
-nuclei -up
+nuclei -ut
 
 echo "Instalando Subfinder"
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
