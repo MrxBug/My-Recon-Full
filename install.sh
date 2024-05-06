@@ -13,6 +13,10 @@ function install_golang() {
     echo "Finished install golang"
 }
 
+# Instalação config.txt
+apt install dos2unix
+dos2unix config.txt
+
 # Instalação das ferramentas Go
 echo "Instalando Nuclei"
 go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
