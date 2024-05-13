@@ -242,10 +242,10 @@ echo -e "\e[1;31m$(wc -l < "$folder/EndpointsL.txt")\e[0m"
 
 # Executando Gf Patterns
 echo -e "\e[32mExecutando Gf lfi...\e[0m"
-cat "$folder/EndpointsL.txt" | uro | gf lfi | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q "$folder/Lfi.txt"
+cat "$folder/EndpointsL.txt" | uro | gf lfi | qsreplace "FUZZ" 2> /dev/null | anew -q "$folder/Lfi.txt"
 
 echo -e "\e[32mExecutando Gf sqli...\e[0m"
-cat "$folder/EndpointsL.txt" | uro | gf sqli | sed "s/'\|(\|)//g" | qsreplace "FUZZ" 2> /dev/null | anew -q "$folder/sqli.txt"
+cat "$folder/EndpointsL.txt" | uro | gf sqli | anew -q "$folder/sqli.txt"
 
 echo -e "\e[32mExecutando Gf xss...\e[0m"
 cat "$folder/EndpointsL.txt" | uro | gf xss | anew -q "$folder/xss.txt"
