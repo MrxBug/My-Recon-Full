@@ -202,7 +202,7 @@ echo -e "\e[1;31m$(wc -l < "$folder/JS.txt")\e[0m"
 
 # Executando gau para encontrar endpoints
 echo -e "\e[33mFinding endpoints with gau...\e[0m"
-cat "$folder/live_subdomains.txt" | gau --blacklist jpg,jpeg,gif,css,tif,tiff,png,ttf,woff,woff2,ico,pdf,svg --threads 6 --o "$folder/EndpointsGau.txt"
+cat "$folder/live_subdomains.txt" | gau --blacklist jpg,jpeg,gif,css,tif,tiff,png,ttf,woff,woff2,ico,pdf,svg --o "$folder/EndpointsGau.txt"
 echo -e "\e[1;31m$(wc -l < "$folder/EndpointsGau.txt")\e[0m"
 
 # Executando waybackurls
