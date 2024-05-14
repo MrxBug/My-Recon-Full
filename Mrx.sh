@@ -147,7 +147,7 @@ echo -e "\e[1;31m$(wc -l < "$folder/crt_tmp.txt")\e[0m"
 
 # Executando abuseipdb
 echo -e "\e[33mRunning abuseipdb\e[0m"
-curl -s "https://www.abuseipdb.com/whois/$domain" -H "user-agent: firefox" -b "abuseipdb_session=" | grep -E '<li>\w.*</li>' | sed -E 's/<\/?li>//g' | sed -e "s/$/.$domain/" | sort -u > "$folder/abuseipdb_tmp.txt"
+curl -s "https://www.abuseipdb.com/whois/"$domain" -H "user-agent: firefox" -b "abuseipdb_session=" | grep -E '<li>\w.*</li>' | sed -E 's/<\/?li>//g' | sed -e "s/$/.$domain/" | sort -u > "$folder/abuseipdb_tmp.txt"
 # Contar as linhas do arquivo 
 echo -e "\e[1;31m$(wc -l < "$folder/abuseipdb_tmp.txt")\e[0m"
 
@@ -229,7 +229,7 @@ echo -e "\e[1;31m$(wc -l < "$folder/cariddi.txt")\e[0m"
 
 # Executando katana 
 echo -e "\e[33mFinding endpoints with katana...\e[0m"
-cat "$folder/live_subdomains.txt" | katana -silent -jc -kf all -d 3 -fs rdn -c 30 -o "$folder/Endpointskat.txt"
+cat "$folder/live_subdomains.txt" | katana -silent -f qurl -jc -kf all -d 3 -fs rdn -c 30 -o "$folder/Endpointskat.txt"
 echo -e "\e[1;31m$(wc -l < "$folder/Endpointskat.txt")\e[0m"
 
 # Removendo duplicatas usando uro
@@ -307,14 +307,14 @@ dalfox file "$folder/XSS_Ref.txt" --skip-mining-all --waf-evasion -o "$folder/Vu
 
 # nuclei exposures JS
 echo -e "\e[32mExecutando nuclei JS Vulnerabilit\e[0m"
-cat "$folder/EndpointsL.txt" | uro | grep -iE '.js'| grep -iEv '(.jsp|.json)' | anew "$folder/js1.txt"
+cat "$folder/EndpointsL.txt" | uro | grep -iE '.js' | grep -iEv '(.jsp|.json)' | anew "$folder/js1.txt"
 cat "$folder/js1.txt" "$folder/JS.txt" | anew "$folder/JS3.txt"
-rm "$folder/js1.txt" "$folder/JS.txt"
 nuclei -l "$folder/JS3.txt" -t ~/nuclei-templates/http/exposures/ -o "$folder/js_Vul.txt"
+rm "$folder/js1.txt" "$folder/JS.txt"
 
 # nuclei
 echo -e "\e[32mExecutando nuclei Vulnerabilit\e[0m"
-nuclei -l "$folder/live_subdomains.txt" -severity low,medium,high,critical -o "$folder/severityNUclei.txt" -H "User-Agent:Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0"
+nuclei -l "$folder/live_subdomains.txt" -severity low,medium,high,critical -o "$folder/severityNUclei.txt" -H "User-Agent:Mozilla/5.0 (Android; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0"
 
 # Arquivos rápidos e suculentos com lista de palavras tomnomnom e ffuf
 echo -e "\e[33mffuf Arquivos suculentos...\e[0m"
