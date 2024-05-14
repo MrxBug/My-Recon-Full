@@ -68,9 +68,9 @@ echo -e "\e[1;31m$(wc -l < "$folder/subfinder_tmp.txt")\e[0m"
 # Executando amass para encontrar subdomínios
 echo -e "\e[33mRunning amass\e[0m"
 amass enum -passive -norecursive -d "$domain" -o "$folder/amass_tmp.txt"
-cat "$folder/amass_tmp.txt" | oam_subs -names -d "$domain" > "$folder/amass_tmp2.txt"
+cat "$folder/amass_tmp.txt" | oam_subs -names -d "$domain" > "$folder/amasstmp2.txt"
 # Contar as linhas do arquivo 
-echo -e "\e[1;31m$(wc -l < "$folder/amass_tmp2.txt")\e[0m"
+echo -e "\e[1;31m$(wc -l < "$folder/amasstmp2.txt")\e[0m"
 
 # Executando Findomain
 echo -e "\e[33mRunning Findomain\e[0m"
@@ -120,8 +120,6 @@ curl "https://api.subdomain.center/?domain=$domain" -s | jq -r '.[]' | sort -u >
 # Contar as linhas do arquivo 
 echo -e "\e[1;31m$(wc -l < "$folder/center_tmp.txt")\e[0m"
 
-# Executando Sublist3r
-# colocar caminho Sublist3r
 echo -e "\e[33mRunning Sublist3r\e[0m"
 python3 ~/tools/Sublist3r/sublist3r.py -d "$domain" -v -o "$folder/Sublist3r_tmp.txt"
 # Contar as linhas do arquivo 
@@ -166,14 +164,13 @@ echo -e "\e[1;31m$(wc -l < "$folder/urlscan_tmp.txt")\e[0m"
 # Executando RapidDNS
 echo -e "\e[33mRunning RapidDNS\e[0m"
 curl -s "https://rapiddns.io/subdomain/$domain?full=1#result" | grep -v "RapidDNS" | grep -v "<td><a" | cut -d '>' -f 2 | cut -d '<' -f 1 | grep "$domain" | grep -v "*" | sed -e 's/^[[:punct:]]//g' | sed -r '/^\s*$/d' | sort -u > "$folder/RapidDNS_tmp.txt"
-# Contar as linhas do arquivo 
 echo -e "\e[1;31m$(wc -l < "$folder/RapidDNS_tmp.txt")\e[0m"
 
 # Limpando e ordenando subdomínios
 echo -e "\e[33mCleaning and sorting subdomains\e[0m"
-cat "$folder/subfinder_tmp.txt" "$folder/amass_tmp2.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt" > "$folder/subdomains_tmp1.txt"
-sort -u "$folder/subdomains_tmp1.txt" > "$folder/subdomains.txt"
-rm "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/amass_tmp2.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt"
+cat "$folder/subfinder_tmp.txt" "$folder/amasstmp2.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt" >> "$folder/subdomains_tmp1.txt"
+sort -u "$folder/subdomains_tmp1.txt" >> "$folder/subdomains.txt"
+rm "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/amasstmp2.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt"
 rm "$folder/subdomains_tmp1.txt"
 echo -e "\e[1;31m$(wc -l < "$folder/subdomains.txt")\e[0m"
 
@@ -284,8 +281,6 @@ cat "$folder/EndpointsL.txt" | uro | gf ssrf | anew "$folder/ssrf.txt"
 echo -e "\e[32mExecutando Testes de Vulnerabilidade\e[0m"
 
 # takeover vulnerabilities
-# criar caminho e add o arquivo abaixo
-#https://raw.githubusercontent.com/haccer/subjack/master/fingerprints.json
 echo -e "\e[32mExecutando takeover Vulnerabilit\e[0m"
 subjack -w "$folder/live_subdomains.txt" -t 20 -a -o "$folder/takeover.txt" -ssl
 echo -e "\e[1;31m$(wc -l < "$folder/takeover.txt")\e[0m"
