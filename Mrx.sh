@@ -69,8 +69,9 @@ echo -e "\e[1;31m$(wc -l < "$folder/subfinder_tmp.txt")\e[0m"
 echo -e "\e[33mRunning amass\e[0m"
 amass enum -passive -norecursive -d "$domain" -o "$folder/amass_tmp.txt"
 cat "$folder/amass_tmp.txt" | oam_subs -names -d "$domain" > "$folder/amass_tmp2.txt"
+rm "$folder/amass_tmp.txt"
 # Contar as linhas do arquivo
-echo -e "\e[1;31m$(wc -l < "$folder/amass_tmp.txt")\e[0m"
+echo -e "\e[1;31m$(wc -l < "$folder/amass_tmp2.txt")\e[0m"
 
 # Executando Findomain
 echo -e "\e[33mRunning Findomain\e[0m"
