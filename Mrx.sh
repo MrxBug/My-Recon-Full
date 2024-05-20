@@ -172,17 +172,16 @@ echo -e "\e[1;31m$(wc -l < "$folder/RapidDNS_tmp.txt")\e[0m"
 # Limpando e ordenando subdomínios
 echo -e "\e[33mCleaning and sorting subdomains\e[0m"
 cat "$folder/subfinder_tmp.txt" "$folder/amass_tmp2.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt" > "$folder/subdomains_tmp1.txt"
-sort -u "$folder/subdomains_tmp1.txt" > "$folder/subdomains.txt"
+sort -u "$folder/subdomains_tmp1.txt" > "$folder/subdomains1.txt"
+cat "$folder/subdomains1.txt" | alterx | dnsx > "$folder/subdomains2.txt"
+cat "$folder/subdomains1.txt" "$folder/subdomains2.txt" | sort -u > "$folder/subdomains.txt"
 rm "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/amass_tmp2.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt"
-rm "$folder/subdomains_tmp1.txt"
+rm "$folder/subdomains_tmp1.txt" "$folder/subdomains1.txt" "$folder/subdomains2.txt"
 echo -e "\e[1;31m$(wc -l < "$folder/subdomains.txt")\e[0m"
 
 # Executando Naabu Portas Scan
 echo -e "\e[33mRunning naabu...\e[0m"
-naabu -c 250 -l "$folder/subdomains.txt" -port "81,300,591,593,832,981,1010,1311,1099,2082,2095,2096,2480,3000,3128,3333,4243,4567,4711,4712,4993,5000,5104,5108,5280,5281,5601,5800,6543,7000,7001,7396,7474,3000,5000,8080,8000,8081,8888,8069,8009,8001,8070,8088,8002,8060,8091,8086,8010,8050,8085,8089,8040,8020,8051,8087,8071,8011,8030,8061,8072,8100,8083,8073,8099,8092,8074,8043,8035,8055,8021,8093,8022,8075,8044,8062,8023,8094,8012,8033,8063,8045,7000,9000,7070,9001,7001,10000,9002,7002,9003,7003,10001,80,443,4443" | anew "$folder/portscan.txt"
-echo -e "\e[33mRunning httpx Live ports\e[0m"
-httpx -l "$folder/portscan.txt" -o "$folder/liveports.txt"
-rm "$folder/portscan.txt"
+naabu -host "$folder/subdomains.txt" -tp 1000 -nmap-cli 'nmap -A' > "$folder/PortScan.txt"
 
 # Executando httpx para encontrar subdomínios ativos
 echo -e "\e[33mFinding live subdomains...\e[0m"
@@ -196,8 +195,8 @@ echo -e "\e[1;31m$(wc -l < "$folder/active_priority.txt")\e[0m"
 
 # Extract .js Subdomains
 echo -e "\e[33mExtract .js Subdomains...\e[0m"
-cat "$folder/live_subdomains.txt" | getJS --complete | anew "$folder/JS.txt"
-echo -e "\e[1;31m$(wc -l < "$folder/JS.txt")\e[0m"
+cat "$folder/live_subdomains.txt" | getJS --complete | anew "$folder/JS1.txt"
+echo -e "\e[1;31m$(wc -l < "$folder/JS1.txt")\e[0m"
 
 # Executando gau para encontrar endpoints
 echo -e "\e[33mFinding endpoints with gau...\e[0m"
@@ -211,9 +210,7 @@ echo -e "\e[1;31m$(wc -l < "$folder/EndpointsWay.txt")\e[0m"
 
 # Executando gospider
 echo -e "\e[33mExecutando gospider...\e[0m"
-gospider -S "$folder/live_subdomains.txt" -o "$folder/output1" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg)" --other-source 
-cat "$folder/output1/*" | grep -e "code-200" | awk '{print $5}' | anew "$folder/EndpointsGos.txt"
-rm -r "$folder/output1"
+gospider -S "$folder/live_subdomains.txt" -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg)" --other-source | grep -e "code-200" | awk '{print $5}' | anew "$folder/EndpointsGos.txt"
 echo -e "\e[1;31m$(wc -l < "$folder/EndpointsGos.txt")\e[0m"
 
 # Executando hakrawler
@@ -282,16 +279,6 @@ cat "$folder/EndpointsL.txt" | uro | gf ssrf | anew "$folder/ssrf.txt"
 
 echo -e "\e[32mExecutando Testes de Vulnerabilidade\e[0m"
 
-# One-line CVE-2022-0378
-echo -e "\e[32mCVE-2022-0378 One-line\e[0m"
-cat "$folder/live_subdomains.txt" | while read h do; do curl -sk "$h/module/?module=admin%2Fmodules%2Fmanage&id=test%22+onmousemove%3dalert(1)+xx=%22test&from_url=x"| grep -qs "onmouse" && echo "$h: VULNERABLE - URL: $h/module/?module=admin%2Fmodules%2Fmanage&id=test%22+onmousemove%3dalert(1)+xx=%22test&from_url=x"; done > "$folder/CVE-2022-0378.txt"
-echo -e "\e[1;31m$(wc -l < "$folder/CVE-2022-0378.txt")\e[0m"
-
-# One-line Rce
-echo -e "\e[32mRCE One-line\e[0m"
-cat "$folder/subdomains.txt" | httpx -path "/cgi-bin/admin.cgi?Command=sysCommand&Cmd=id" -nc -ports 80,443,8080,8443 -mr "uid=" -silent | grep -q "uid=" && echo "$h: VULNERABLE" > "$folder/RceOneline.txt"
-echo -e "\e[1;31m$(wc -l < "$folder/RceOneline.txt")\e[0m"
-
 # takeover vulnerabilities
 # criar caminho e add o arquivo abaixo
 #https://raw.githubusercontent.com/haccer/subjack/master/fingerprints.json
@@ -316,7 +303,10 @@ dalfox file "$folder/XSS_Ref.txt" --skip-mining-all --waf-evasion -o "$folder/Vu
 
 # nuclei exposures JS
 echo -e "\e[32mExecutando nuclei JS Vulnerabilit\e[0m"
+cat "$folder/EndpointsL.txt" | grep -iE '.js'| grep -iEv '(.jsp|.json)' | anew "$folder/JS2.txt"
+cat "$folder/JS1.txt" "$folder/JS2.txt" | anew "$folder/JS.txt"
 nuclei -l "$folder/JS.txt" -t ~/nuclei-templates/http/exposures/ -o "$folder/js_Vul.txt"
+rm "$folder/JS1.txt" "$folder/JS2.txt"
 
 # nuclei
 echo -e "\e[32mExecutando nuclei Vulnerabilit\e[0m"
@@ -324,7 +314,7 @@ nuclei -l "$folder/live_subdomains.txt" -severity low,medium,high,critical -o "$
 
 # Arquivos rápidos e suculentos com lista de palavras tomnomnom e ffuf
 echo -e "\e[33mffuf Arquivos suculentos...\e[0m"
-ffuf -w ~/wordlists/common-paths-tomnomnom -u "https://$domain/FUZZ" -o "$folder/ffuf.txt"
+ffuf -w ~/wordlists/common-paths-tomnomnom.txt -u "https://$domain/FUZZ" -o "$folder/ffuf.txt"
 
 echo -e "\e[34mScanner Concluído\e[0m"
 
