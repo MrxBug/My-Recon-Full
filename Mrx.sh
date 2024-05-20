@@ -176,7 +176,7 @@ cat "$folder/subfinder_tmp.txt" "$folder/amass_tmp2.txt" "$folder/Findomain_tmp.
 sort -u "$folder/subdomains_tmp1.txt" > "$folder/subdomains1.txt"
 cat "$folder/subdomains1.txt" | alterx | dnsx > "$folder/subdomains2.txt"
 cat "$folder/subdomains1.txt" "$folder/subdomains2.txt" | sort -u > "$folder/subdomains.txt"
-rm "$folder/subfinder_tmp.txt" "$folder/amass_tmp.txt" "$folder/amass_tmp2.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt"
+rm "$folder/subfinder_tmp.txt" "$folder/amass_tmp2.txt" "$folder/Findomain_tmp.txt" "$folder/Assetfinder_tmp.txt" "$folder/Sublist3r_tmp.txt" "$folder/jldc_tmp.txt" "$folder/wayback_tmp.txt" "$folder/crt_tmp.txt" "$folder/abuseipdb_tmp.txt" "$folder/alienvault_tmp.txt" "$folder/urlscan_tmp.txt" "$folder/RapidDNS_tmp.txt" "$folder/chaos_tmp.txt" "$folder/gau_tmp.txt" "$folder/github_tmp.txt" "$folder/gitlab_tmp.txt" "$folder/cero_temp.txt" "$folder/center_tmp.txt"
 rm "$folder/subdomains_tmp1.txt" "$folder/subdomains1.txt" "$folder/subdomains2.txt"
 echo -e "\e[1;31m$(wc -l < "$folder/subdomains.txt")\e[0m"
 
