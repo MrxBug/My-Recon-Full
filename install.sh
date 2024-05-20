@@ -23,6 +23,14 @@ go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 mv ~/go/bin/* /usr/local/bin/
 nuclei -ut
 
+echo "Instalando dnsx"
+go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+mv ~/go/bin/* /usr/local/bin/
+
+echo "Instalando alterx"
+go install github.com/projectdiscovery/alterx/cmd/alterx@latest
+mv ~/go/bin/* /usr/local/bin/
+
 echo "Instalando Subfinder"
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 mv ~/go/bin/* /usr/local/bin/
