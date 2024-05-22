@@ -55,6 +55,9 @@ fi
 # Carregar as variáveis do arquivo config.txt
 source config.txt
 
+#excluded_extentions
+excluded_extentions="png,jpg,gif,jpeg,swf,woff,svg,pdf,css,webp,woff,woff2,eot,ttf,otf,mp4"
+
 # Criando pasta para o domínio
 folder="$domain"
 mkdir -p "$folder"
@@ -201,7 +204,7 @@ echo -e "\e[1;31m$(wc -l < "$folder/JS1.txt")\e[0m"
 
 # Executando gau para encontrar endpoints
 echo -e "\e[33mFinding endpoints with gau...\e[0m"
-cat "$folder/live_subdomains.txt" | gau | egrep -v '(.jpg|.jpeg|.gif|.css|.tif|.tiff|.png|.ttf|.wolf|.woff2|.ico|.pdf|.svg)' > "$folder/EndpointsGau.txt"
+cat "$folder/live_subdomains.txt" | gau --subs --threads 5 --blacklist "$excluded_extentions" --o "$folder/EndpointsGau.txt"
 echo -e "\e[1;31m$(wc -l < "$folder/EndpointsGau.txt")\e[0m"
 
 # Executando waybackurls
